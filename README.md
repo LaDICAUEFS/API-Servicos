@@ -1,14 +1,14 @@
 # API-Servicos
 
-1-) Responsável pelo cadastro dos serviços;
-2-) Gerenciamento dos serviços;
+* Responsável pelo cadastro dos serviços;
+* Gerenciamento dos serviços;
 
-* Node modules:
+# Node modules:
 
-1-) EJS - User Interface
-2-) Body Parser - Pegar as informações do formulario
-3-) Express - Framework que gerencia as rotas
+* EJS - User Interface
+* Body Parser - Pegar as informações do formulario
+* Express - Framework que gerencia as rotas
 
-*Proxima Metas:
+# Proxima Metas:
 
-1-)Salvamento dos dados via Firebase
+* Salvamento dos dados via Firebase
