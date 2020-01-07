@@ -1,6 +1,22 @@
 const express = require("express");//express
 const bodyParser = require("body-parser");//body-parser
 const app = express(); //gerenciador express
+const firebase = require("firebase");
+const configFirebase = require("./database/firebase");
+
+//configuracao do firebase
+//as informações do banco do firebase devem ser adicionadas no arquivo firebase.js no diretorio firebase/database
+var config = {
+    apiKey: configFirebase.apiKey,
+    authDomain: configFirebase.authDomain,
+    databaseURL:  configFirebase.databaseURL,
+    storageBucket: configFirebase.storageBucket
+};
+
+firebase.initializeApp(config);
+// Get a reference to the database service
+var database = firebase.database();
+
 //configuração do body-parser
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -22,8 +38,14 @@ app.get("/cadastrarServico",function(req,res){
 app.post("/salvarServico",function(req,res){
     var nome = req.body.nome;
     var ip = req.body.ipServico;
-    var porta = req.body.porta;
-    console.log("Nome: " + nome + " Ip: " + ip + " Porta: " + porta);
+    var porta = parseInt(req.body.portaServico);
+    var identificador = req.body.identificador;
+    //salva a informação no banco de dados no firebase
+    firebase.database().ref('servicos/' + identificador).set({
+        name: nome,
+        ip: ip,
+        porta: porta
+    });
     res.redirect("/");
 });
 
