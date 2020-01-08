@@ -13,9 +13,14 @@ var config = {
     storageBucket: configFirebase.storageBucket
 };
 
+var servicosSalvos = [];
+
 firebase.initializeApp(config);
 // Get a reference to the database service
-var database = firebase.database();
+var servicos = firebase.database().ref("servicos");
+servicos.once('value',function(data){
+    servicosSalvos = data;
+});
 
 //configuração do body-parser
 app.use(bodyParser.urlencoded({extended: false}));
@@ -39,14 +44,17 @@ app.post("/salvarServico",function(req,res){
     var nome = req.body.nome;
     var ip = req.body.ipServico;
     var porta = parseInt(req.body.portaServico);
-    var identificador = req.body.identificador;
     //salva a informação no banco de dados no firebase
-    firebase.database().ref('servicos/' + identificador).set({
-        name: nome,
+    servicos.push().set({
+        nome: nome,
         ip: ip,
         porta: porta
     });
     res.redirect("/");
+});
+
+app.get("/servicos",function(req,res){
+    res.render("servicos",{servicos: servicosSalvos});
 });
 
 //start do server
