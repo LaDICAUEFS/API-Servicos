@@ -2,20 +2,36 @@
 <body>
     <%- include('./partials/navbar.ejs') %>
     <div class="container">
-        <% servicos.forEach(servico => { %>
-            <div class="card">
-                <div class="card-header">
-                    <h3><%= servico.val().nome %></h3>
-                </div>
-                <div class="card-body">
-                    <h4>Ip:</h4>
-                    <h5><%= servico.val().ip %></h5>
-                    <br>
-                    <h4>Porta:</h4>
-                    <h5><%= servico.val().porta%></h5>
-                </div>
-            </div>
-        <% }) %>
+        <hr>
+        <h2>Serviços</h2>
+        <hr>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>IP</th>
+                    <th>Porta</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% servicos.forEach(servico => { %>
+                    <tr>
+                        <th><%= servico.val().nome %></th>
+                        <th><%= servico.val().ip %></th>
+                        <th><%= servico.val().porta%></th>
+                        <th>
+                            <button class="btn btn-warning">Editar</button>
+                            <form method="POST" action="/servicos/deletar" style="display: inline;">
+                                <input type="hidden" name="id" value="<%= servico.val().id %>">
+                                <button class="btn btn-danger">Deletar</button>
+                            </form>
+                        </th>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>  
     </div>
 </body>
 <%- include('./partials/footer.ejs') %>
+  
