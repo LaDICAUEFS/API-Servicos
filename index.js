@@ -18,7 +18,7 @@ var servicosSalvos = [];
 firebase.initializeApp(config);
 // Get a reference to the database service
 var servicos = firebase.database().ref("servicos");
-servicos.once('value',function(data){
+servicos.on('value',function(data){
     servicosSalvos = data;
 });
 
@@ -67,12 +67,42 @@ app.get("/servicos",function(req,res){
     res.render("servicos",{servicos: servicosSalvos});
 });
 
+
 //rota para deletar um serviço
 app.post("/servicos/deletar",(req,res) => {
     var id = req.body.id;
     firebase.database().ref("servicos/" + id).remove();
-    res.redirect("/");
+    res.redirect("/servicos");
 });
+
+//rota para edição
+app.get("/servicos/editar/:id",(req,res) => {
+    var editar;
+    var id = req.params.id;
+    servicosSalvos.forEach(servico => {
+        if(servico.val().id == id){
+            editar = servico;
+        }
+    });
+    res.render("editar",{servico: editar});
+});
+
+//rota para edição, salvar as informações novas
+app.post("/editarServico",(req,res)=>{
+    var nome = req.body.nome;
+    var ip = req.body.ipServico;
+    var porta = req.body.portaServico;
+    var id = req.body.id;
+
+    firebase.database().ref("servicos/" + id).set({
+        nome: nome,
+        ip: ip,
+        porta: porta,
+        id: id
+    });
+
+    res.redirect("/servicos");
+})
 
 //start do server
 app.listen(8080,() =>{

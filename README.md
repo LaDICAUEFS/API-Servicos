@@ -10,7 +10,10 @@
 * Express - Framework que gerencia as rotas
 * Firebase - Banco de dados não relacional
 
+# Finalizado
+
+* CRUD de serviços;
+
 # Proxima Metas:
 
-* Editar e remoção dos dados.
-* Fazer com que os dados novos sejam mostrados na rota servicos
+* Criação dos Sockets;

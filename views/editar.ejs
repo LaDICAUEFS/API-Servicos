@@ -1,0 +1,24 @@
+<%- include('./partials/header.ejs') %>
+<body>
+    <%- include('./partials/navbar.ejs') %>
+    <br>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1>Editar serviço:</h1>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/editarServico">
+                    <input type="hidden" name="id" value="<%= servico.val().id%>">
+                    <input type="text" placeholder="Nome do serviço" name="nome" class="form-control" value="<%= servico.val().nome %>">
+                    <br>
+                    <input type="text" placeholder="IP do servidor do serviço" name="ipServico" class="form-control" value="<%= servico.val().ip %>">
+                    <br>
+                    <input type="text" placeholder="Porta do servidor do serviço" name="portaServico" class="form-control" value="<%= servico.val().porta%>">
+                    <br>
+                    <button class="btn btn-primary">Editar</button>
+            </div>
+        </div>
+    </div>
+</body>
+<%- include('./partials/footer.ejs') %>

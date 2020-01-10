@@ -21,8 +21,8 @@
                         <th><%= servico.val().ip %></th>
                         <th><%= servico.val().porta%></th>
                         <th>
-                            <button class="btn btn-warning">Editar</button>
-                            <form method="POST" action="/servicos/deletar" style="display: inline;">
+                            <a class="btn btn-warning" href="/servicos/editar/<%= servico.val().id %>" >Editar</a>
+                            <form method="POST" action="/servicos/deletar" style="display: inline;" onsubmit="confirmarDelete(event,this)">
                                 <input type="hidden" name="id" value="<%= servico.val().id %>">
                                 <button class="btn btn-danger">Deletar</button>
                             </form>
@@ -34,4 +34,12 @@
     </div>
 </body>
 <%- include('./partials/footer.ejs') %>
-  
+<script>
+    function confirmarDelete(event,form){
+        event.preventDefault();
+        var decision = confirm("Você quer deletar este serviço?");
+        if(decision){
+            form.submit();
+        }
+    }
+</script>  
