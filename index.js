@@ -1,8 +1,10 @@
 const express = require("express");//express
 const bodyParser = require("body-parser");//body-parser
 const app = express(); //gerenciador express
-const firebase = require("firebase");
-const configFirebase = require("./database/firebase");
+const firebase = require("firebase"); //gerenciador do firebase
+const configFirebase = require("./database/firebase");//conexão com o realtime database
+const multer = require("multer");
+const path = require("path");
 
 //configuracao do firebase
 //as informações do banco do firebase devem ser adicionadas no arquivo firebase.js no diretorio firebase/database
@@ -29,6 +31,17 @@ app.use(bodyParser.json());
 //configuração do ejs
 app.set('view engine','ejs');
 app.use(express.static('public'));
+//configuração do multer
+const storage = multer.diskStorage({
+    destination:function(req,file,cb){ 
+        cb(null,"uploads/");
+    },
+    filename: function(req,file,cb){
+        var servico = req.body.nome;
+        cb(null, servico + path.extname(file.originalname));
+    }
+});
+const upload = multer({storage});
 
 //rota principal
 app.get("/",function(req,res){
@@ -41,11 +54,11 @@ app.get("/cadastrarServico",function(req,res){
 });
 
 //rota para o salvamento das informações passadas pelo formulario
-app.post("/salvarServico",function(req,res){
+app.post("/salvarServico",upload.single("file"),function(req,res){
+    
     var nome = req.body.nome;
     var ip = req.body.ipServico;
     var porta = parseInt(req.body.portaServico);
-
     // Generate a reference to a new location and add some data using push()
     var servicosRef = servicos.push();
 
