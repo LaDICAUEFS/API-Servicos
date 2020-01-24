@@ -24,6 +24,7 @@
                             <a class="btn btn-warning" href="/servicos/editar/<%= servico.val().id %>" >Editar</a>
                             <form method="POST" action="/servicos/deletar" style="display: inline;" onsubmit="confirmarDelete(event,this)">
                                 <input type="hidden" name="id" value="<%= servico.val().id %>">
+                                <input type="hidden" name="nome" value="<%= servico.val().nome %>">
                                 <button class="btn btn-danger">Deletar</button>
                             </form>
                         </th>
