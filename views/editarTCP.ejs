@@ -8,7 +8,7 @@
                 <h1>Editar serviço:</h1>
             </div>
             <div class="card-body">
-                <form method="POST" action="/editarServico">
+                <form method="POST" action="/editarTCP">
                     <input type="hidden" name="id" value="<%= servico.val().id%>">
                     <input type="hidden" name="nomeAntigo" value="<%= servico.val().nome%>">
                     <input type="text" placeholder="Nome do serviço" name="nome" class="form-control" value="<%= servico.val().nome %>">

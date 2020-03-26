@@ -9,8 +9,7 @@
             <thead>
                 <tr>
                     <th>Nome</th>
-                    <th>IP</th>
-                    <th>Porta</th>
+                    <th>Tipo</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -18,8 +17,11 @@
                 <% servicos.forEach(servico => { %>
                     <tr>
                         <th><%= servico.val().nome %></th>
-                        <th><%= servico.val().ip %></th>
-                        <th><%= servico.val().porta%></th>
+                        <% if(servico.val().diretorio == ''){%>
+                            <th>TCP/IP</th>
+                        <%}else{%>
+                            <th>Arquivo</th>
+                        <%}%>
                         <th>
                             <a class="btn btn-warning" href="/servicos/editar/<%= servico.val().id %>" >Editar</a>
                             <form method="POST" action="/servicos/deletar" style="display: inline;" onsubmit="confirmarDelete(event,this)">

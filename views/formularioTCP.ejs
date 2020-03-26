@@ -8,14 +8,12 @@
                 <h1>Cadastrar serviço:</h1>
             </div>
             <div class="card-body">
-                <form method="POST" action="/salvarServico" enctype="multipart/form-data">
-                    <input type="text" placeholder="Nome do serviço" name="nome" class="form-control">
+                <form method="POST" action="/salvarTCP" enctype="multipart/form-data">
+                    <input type="text" placeholder="Nome do serviço" name="name" class="form-control">
                     <br>
                     <input type="text" placeholder="IP do servidor do serviço" name="ipServico" class="form-control">
                     <br>
                     <input type="text" placeholder="Porta do servidor do serviço" name="portaServico" class="form-control">
-                    <br>
-                    <input type="file" placeholder="Coloque seu codigo aqui" name="file" class="form-control">
                     <br>
                     <button class="btn btn-primary">Salvar</button>
             </div>
