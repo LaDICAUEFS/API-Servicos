@@ -6,7 +6,7 @@ const configFirebase = require("./database/firebase");//conexão com o realtime 
 const multer = require("multer"); //middleware para salvar arquivo
 const path = require("path");//pegar a extensão do arquivo
 const fs = require('fs'); //gerenciador de arquivo
-//const flash = require("connect-flash"); // warnin flash
+//const flash = require("connect-flash"); // warning flash
 
 //configuracao do firebase
 //as informações do banco do firebase devem ser adicionadas no arquivo firebase.js no diretorio firebase/database
@@ -26,13 +26,57 @@ servicos.on('value',function(data){
     servicosSalvos = data;
 });
 
-
 //configuração do body-parser
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 //configuração do ejs
 app.set('view engine','ejs');
 app.use(express.static('public'));
+
+//metodo para verificação de existência de serviços
+function jaExiste(nome){
+    var cadastrado = false;
+    servicosSalvos.forEach(servico => {
+        if(servico.val().nome == nome){
+            cadastrado = true;
+            //req.flash('name_msg', 'Nome já cadastrado');
+        }
+    });
+    return cadastrado;
+}
+
+function validacaoTCP(nome, ip , porta){
+    let split = ip.split('.');
+    let isRight = true;
+    if(jaExiste(nome)){//verificação se já existe um serviço com o mesmo nome cadastrado
+        return false;
+    }
+    if(isNaN(parseInt(porta))){ //verificação se a porta é um inteiro
+        return false;
+    }
+    split.forEach(ip4 => {
+        if(isNaN(parseInt(ip4))){ // verificação se os quartetos do ip são inteiro
+            isRight = false;
+        }
+    });
+    return isRight;
+}
+
+/*async function validacaoArquivo(nome, dir){
+    let arquivoExiste = 'nao';
+    if(jaExiste(nome)){//verificação se já existe um serviço com o mesmo nome cadastrado
+        return false;
+    }
+    const direc = await fs.promises.opendir(dir);
+    if(direc == null){
+        console.log('nop')
+        return false;
+    }else{
+        console.log(direc)
+        return true;
+    }
+}*/
+
 //configuração do multer
 const upload = multer({
     // Como deve ser feito o armazenamento dos arquivos?
@@ -67,29 +111,17 @@ app.get("/cadastrarTCP",function(req,res){
     //{name_msg: req.flash('name_msg')}
 });
 
-//rota para o formularioTCP
+//rota para o formularioArquivo
 app.get("/cadastrarArquivo",function(req,res){
     res.render("formularioArquivo");
 });
-
-function jaExiste(nome){
-    var cadastrado = false;
-    servicosSalvos.forEach(servico => {
-        if(servico.val().nome == nome){
-            cadastrado = true;
-            //req.flash('name_msg', 'Nome já cadastrado');
-        }
-    });
-    return cadastrado;
-}
 
 //rota para o salvamento dos servicos TCP passadas pelo formularioTCP
 app.post("/salvarTCP",upload.single("file"),function(req,res){
     var nome = req.body.name;
     var ip = req.body.ipServico;
     var porta = parseInt(req.body.portaServico);
-    var cadastrado = false;
-    if(jaExiste(nome)){
+    if(!validacaoTCP(nome,ip,porta)){
         res.redirect("/CadastrarTCP");
     }else{
         // Generate a reference to a new location and add some data using push()
@@ -112,7 +144,10 @@ app.post("/salvarTCP",upload.single("file"),function(req,res){
 app.post("/salvarArquivo",upload.single("file"),function(req,res){
     var nome = req.body.name;
     var dir = req.body.dirServico;
-    if(jaExiste(nome)){
+    fs.access(dir, fs.constants.F_OK, (err) => {
+        console.log(err ? 'nao' : 'sim');
+    });
+    if(!validacaoArquivo(nome,dir)){
         res.redirect("/CadastrarArquivo");
     }else{
         // Generate a reference to a new location and add some data using push()
