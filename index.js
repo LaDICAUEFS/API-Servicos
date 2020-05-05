@@ -8,6 +8,24 @@ const path = require("path");//pegar a extensão do arquivo
 const fs = require('fs'); //gerenciador de arquivo
 //const flash = require("connect-flash"); // warning flash
 
+//teste de conexão tcp
+const net = require('net');
+var client = new net.Socket();
+
+/*client.connect(1337, '127.0.0.1', function() {
+	console.log('Connected');
+	client.write('Hello, server! Love, Client.');
+});*/
+
+/*client.on('data', function(data) {
+	console.log('Received: ' + data);
+	client.destroy(); // kill client after server's response
+});*/
+
+client.on('close', function() {
+	console.log('Connection closed');
+});
+
 //configuracao do firebase
 //as informações do banco do firebase devem ser adicionadas no arquivo firebase.js no diretorio firebase/database
 var config = {
@@ -265,6 +283,30 @@ app.post("/editarArquivo",(req,res)=>{
     });
 
     res.redirect("/servicos");
+});
+
+//rota para pegar a informação de um modulo via TCP
+app.get('/enviar/:nome', (req,res) => {
+    let nome = req.params.nome;
+    let ip;
+    let porta;
+    servicosSalvos.forEach(servico => {
+        if(servico.val().nome == nome){
+            ip = servico.val().ip;
+            porta= parseInt(servico.val().porta);
+        }
+    });
+    client.connect(porta, ip, function() {
+        console.log('Connected');
+        client.write('Hello, service!');
+    });
+    client.on('data', function(data) {
+        console.log('Received: ' + data);
+        if(data == 'desligar'){
+            res.redirect('/');
+            client.destroy(); // kill client after server's response
+        }
+    });
 });
 
 //start do server
