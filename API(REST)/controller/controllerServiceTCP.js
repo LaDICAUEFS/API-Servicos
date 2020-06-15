@@ -33,34 +33,39 @@ function jaExiste(nome){
     return cadastrado;
 }
 
-//rota para o formularioTCP
-router.get("/cadastrarTCP",function(req,res){
-    res.render("formularioTCP");
-});
-
 //rota para o salvamento dos servicos TCP passadas pelo formularioTCP
-router.post("/salvarTCP", upload.single("file"),function(req,res){
-    var nome = req.body.name;
-    var ip = req.body.ipServico;
-    var porta = parseInt(req.body.portaServico);
+router.post("/service/TCP", (req,res) => {
+    var nome = req.body.nome;
+    var ip = req.body.ip;
+    var porta = parseInt(req.body.porta);
     if(!validacaoTCP(nome,ip,porta)){//validação 
-        res.redirect("/CadastrarTCP"); //caso tenha alguma informação errada retorna para a rota de cadastro
+        console.log('teste')
+        res.sendStatus(400);
     }else{ // caso todas as codições estejam ok
         manager.salvarTCP(nome,ip,porta);
-        res.redirect("/");
+        res.sendStatus(200);
     }
 });
 
 
 //rota para edição, salvar as informações novas
-router.post("/editarTCP",(req,res)=>{
-    var nome = req.body.nome;
-    var ip = req.body.ipServico;
-    var porta = req.body.portaServico;
-    var id = req.body.id;
-    //salva no firebase
-    manager.editarTCP(nome,ip,porta,id);
-    res.redirect("/servicos");
+router.put("/service/TCP/:id",(req,res)=>{
+    let editar = undefined;
+    var id = req.params.id;
+    //achar o serviço pedido
+    manager.getServices().forEach(servico => {
+        if(servico.val().id == id){
+            editar = servico;
+        }
+    });
+    if(editar != undefined){
+        var nome = req.body.nome;
+        var ip = req.body.ip;
+        var porta = req.body.porta;
+        //salva no firebase
+        manager.editarTCP(nome,ip,porta,id);
+        res.sendStatus(200);
+    }else res.sendStatus(400);
 });
 
 module.exports = router;

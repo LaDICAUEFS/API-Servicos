@@ -1,0 +1,23 @@
+<%- include('./partials/header.ejs') %>
+<body>
+    <%- include('./partials/navbar.ejs') %>
+    <br>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1>Cadastrar serviço:</h1>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/salvarTCP">
+                    <input type="text" placeholder="Nome do serviço" name="name" class="form-control">
+                    <br>
+                    <input type="text" placeholder="IP do servidor do serviço" name="ip" class="form-control">
+                    <br>
+                    <input type="text" placeholder="Porta do servidor do serviço" name="porta" class="form-control">
+                    <br>
+                    <button class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </div>
+</body>
+<%- include('./partials/footer.ejs') %>

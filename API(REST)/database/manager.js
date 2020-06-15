@@ -64,7 +64,7 @@ function salvarArquivo(nome, dir){
     });
 }
 
-function editarArquivo(nome, dir){
+function editarArquivo(nome, dir,id){
     //salva no firebase
     firebase.database().ref("servicos/" + id).set({
         nome: nome,

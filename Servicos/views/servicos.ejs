@@ -1,0 +1,48 @@
+<%- include('./partials/header.ejs') %>
+<body>
+    <%- include('./partials/navbar.ejs') %>
+    <div class="container">
+        <hr>
+        <h2>Serviços</h2>
+        <hr>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% Object.values(servicos).forEach( valor => { %>
+                    <tr>
+                        <th><%= valor.nome %></th>
+                        <% if(valor.diretorio == ''){%>
+                            <th>TCP/IP</th>
+                        <%}else{%>
+                            <th>Arquivo</th>
+                        <%}%>
+                        <th>
+                            <a class="btn btn-warning" href="/servicos/editar/<%= valor.id %>" >Editar</a>
+                            <form method="POST" action="/servicos/deletar" style="display: inline;" onsubmit="confirmarDelete(event,this)">
+                                <input type="hidden" name="id" value="<%= valor.id %>">
+                                <input type="hidden" name="nome" value="<%= valor.nome %>">
+                                <button class="btn btn-danger">Deletar</button>
+                            </form>
+                        </th>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>  
+    </div>
+</body>
+<%- include('./partials/footer.ejs') %>
+<script>
+    function confirmarDelete(event,form){
+        event.preventDefault();
+        var decision = confirm("Você quer deletar este serviço?");
+        if(decision){
+            form.submit();
+        }
+    }
+</script>  

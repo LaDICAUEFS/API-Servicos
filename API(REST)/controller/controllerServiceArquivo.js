@@ -41,37 +41,48 @@ function validacaoArquivo(nome, dir){
     return true;
 }
 
-//rota para a criação de serviços Arquivo
-router.get("/cadastrarArquivo",function(req,res){
-    res.render("formularioArquivo");
-});
-
 //rota para salvar serviços Arquivo
-router.post("/salvarArquivo", upload.single("file"),function(req,res){
-    var nome = req.body.name;
-    var dir = req.body.dirServico;
+router.post("/service/Arquivo", (req,res) => {
+    var nome = req.body.nome;
+    var dir = req.body.dir;
     if(!validacaoArquivo(nome,dir)){
-        res.redirect("/CadastrarArquivo");
+        res.sendStatus(400);
     }else{
         fs.access(dir, fs.constants.F_OK, (err) => {
             if(err){
-                res.redirect("/CadastrarArquivo");
+                res.sendStatus(400);
             }else{
                 manager.salvarArquivo(nome,dir);
-                res.redirect("/");
+                res.sendStatus(200);
             }
         });
     }
 });
 
 //rota para edição, salvar as informações novas
-router.post("/editarArquivo",(req,res)=>{
-    var nome = req.body.nome;
-    var dirServico = req.body.dirServico;
-    var id = req.body.id;
-    //salva no firebase
-    manager.editarArquivo(nome,dir)
-    res.redirect("/servicos");
+router.put("/service/Arquivo/:id",(req,res)=>{
+    let editar = undefined;
+    var id = req.params.id;
+    //achar o serviço pedido
+    manager.getServices().forEach(servico => {
+        if(servico.val().id == id){
+            editar = servico;
+        }
+    });
+    if(editar != undefined){
+        var nome = req.body.nome;
+        var dir = req.body.dir;
+        fs.access(dir, fs.constants.F_OK, (err) => {
+            if(err){
+                console.log(err)
+                res.sendStatus(400);
+            }else{
+                //salva no firebase
+                manager.editarArquivo(nome,dir,id);
+                res.sendStatus(200);
+            }
+        });
+    }
 });
 
 module.exports = router;

@@ -3,12 +3,14 @@ const bodyParser = require("body-parser");//body-parser
 const app = express(); //gerenciador express
 const manager = require('./database/manager');//gerenciador do firebase
 const net = require('net'); //gerenciador de comunicação TCP
+const cors = require('cors'); 
 //Controller Services TCP e Arquivo
 const controllerTCP = require('./controller/controllerServiceTCP');
 const controllerArquivo = require('./controller/controllerServiceArquivo');
 
 //gerenciamento da conexão TCP
 var client = new net.Socket();
+var data = undefined;
 client.on('close', function() {
 	console.log('Connection closed');
 });
@@ -16,50 +18,41 @@ client.on('close', function() {
 //configuração do body-parser
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
-//configuração do ejs
-app.set('view engine','ejs');
-app.use(express.static('public'));
-
 //pegando as rotas dos controllers
 app.use('/', controllerTCP);
 app.use('/', controllerArquivo);
-
-//rota principal
-app.get("/",function(req,res){
-    res.render("index");
-});
-
+//cors
+app.use(cors());
 
 //rota para listagem dos serviços
-app.get("/servicos",function(req,res){
-    res.render("servicos",{servicos: manager.getServices()});
+app.get("/service",function(req,res){
+    let services = manager.getServices();
+    res.statusCode = 200;
+    res.json({services})
 });
-
 
 //rota para deletar um serviço
-app.post("/servicos/deletar",(req,res) => {
-    var id = req.body.id;
-    //remoção do firebase
-    manager.deletarService(id);
-    res.redirect("/servicos");
-});
-
-//rota para edição de serviços
-app.get("/servicos/editar/:id",(req,res) => {
-    var editar;
-    var id = req.params.id;
+app.get("/service/:id",(req,res) => {
+    let id = req.params.id;
+    var editar = undefined;
     //achar o serviço pedido
     manager.getServices().forEach(servico => {
         if(servico.val().id == id){
             editar = servico;
         }
     });
-    //descobrir qual é o tipo do serviço para redirecionar para a página de edição correta
-    if(editar.val().diretorio == ''){
-        res.render("editarTCP",{servico: editar});
-    }else{
-        res.render("editarArquivo",{servico: editar});
-    }
+    if(editar != undefined){
+        res.statusCode = 200;
+        res.json({editar});
+    }else res.sendStatus(200);
+});
+
+//rota para deletar um serviço
+app.delete("/service/:id",(req,res) => {
+    let id = req.params.id;
+    //remoção do firebase
+    manager.deletarService(id);
+    res.sendStatus(200);
 });
 
 //rota para pegar a informação de um modulo via TCP
@@ -82,9 +75,9 @@ app.get('/enviar/:nome', (req,res) => {
     });
     //receber as mensagens do servidor
     client.on('data', function(data) {
-        console.log('Received: ' + data);
-        if(data == 'desligar'){//receber a mensagem de desligamento para poder enviar a informação de volta
-            res.redirect('/');
+        if(data.command == 'turnOff'){//receber a mensagem de desligamento para poder enviar a informação de volta
+            res.statusCode = 200;
+            res.json(data)
             client.destroy(); // kill client after server's response
         }
     });
